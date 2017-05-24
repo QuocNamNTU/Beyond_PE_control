@@ -17,7 +17,11 @@
 
 
 
+void ADC_result(void);
 void RMS_Calculation(void);
+void PFC_Init(void);
+void DC_Voltage_Control(void);
+void PFC_Current_Control(void);
 
 
 #define Ts      0.00001538;           //sampling time = 1/65kHz
@@ -99,6 +103,8 @@ long    temp_zero;
 int     init_boost;     // Small boost command when PFC is enabled the first time
 
 int16   start_flag, pfc_on_flag, Soft_Start_Phase, OV_flag, flag_NL_Vloop;//Set NL Vloop flag for NL Vloop Control
+
+
 
 
 
@@ -204,7 +210,7 @@ void PFC_Init(void)
 
 
 
-void PFC_Control(void)
+void DC_Voltage_Control(void)
 {
 
 
@@ -227,12 +233,13 @@ void PFC_Control(void)
 
             }
 
+}
 
 
+void PFC_Current_Control(void)
+{
 
-            //IS_REF = 25;
-
-
+            //IS_ref = 25;
 
 
             Iac_ref = IS_ref*PFC_Vac_fb/Vac_peak;      //input current reference

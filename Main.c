@@ -30,6 +30,11 @@ extern void ADC_init(void);
 extern void EPWM_init(void);
 extern void Interrupt_Setting(void);
 
+extern void ADC_result(void);
+extern void RMS_Calculation(void);
+extern void PFC_Init(void);
+extern void DC_Voltage_Control(void);
+extern void PFC_Current_Control(void);
 
 //
 // Functions that will be run from RAM need to be assigned to
@@ -131,6 +136,10 @@ void main(void)
 
     //AdcOffsetSelfCal();
 
+    PFC_Init();     //Initial status of PFC
+
+
+
     while(1)
         {
             ;
@@ -201,29 +210,13 @@ __interrupt void cpu_timer0_isr(void)
 __interrupt void adc_isr(void)
 {
 
-        Voltage1[ConversionCount] = AdcResult.ADCRESULT0;
-        Voltage2[ConversionCount] = AdcResult.ADCRESULT1;
-        Voltage3[ConversionCount] = AdcResult.ADCRESULT2;
-        Voltage4[ConversionCount] = AdcResult.ADCRESULT3;
-        Voltage5[ConversionCount] = AdcResult.ADCRESULT4;
-        Voltage6[ConversionCount] = AdcResult.ADCRESULT5;
-        Voltage7[ConversionCount] = AdcResult.ADCRESULT6;
-        Voltage8[ConversionCount] = AdcResult.ADCRESULT7;
-        Voltage9[ConversionCount] = AdcResult.ADCRESULT8;
-        Voltage10[ConversionCount] = AdcResult.ADCRESULT9;
 
+       ADC_result();        //Get ADC measurement of PFC
 
-        //
-        // If 20 conversions have been logged, start over
-        //
-        if(ConversionCount == 9)
-        {
-            ConversionCount = 0;
-        }
-        else
-        {
-            ConversionCount++;
-        }
+       DC_Voltage_Control();        //DC link voltage control
+
+       PFC_Current_Control();       //Current control
+
 
 
     //
