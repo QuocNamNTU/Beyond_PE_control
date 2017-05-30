@@ -1,15 +1,9 @@
-
-//###########################################################################
-
-// FILE:   PFC_Control.c
-
-// TITLE:  PFC Control Functions
-
-//Last update  23/05/2017
-
-//###########################################################################
-
-//###########################################################################
+/*
+ * PFC_Control.c
+ *
+ *  Created on: April 21, 2017
+ *      Author: tqnam
+ */
 
 
 #include "F2806x_Device.h"     // F2806x Headerfile Include File
@@ -17,59 +11,55 @@
 
 
 
-void ADC_result(void);
+void PFC_ADC_result(void);
 void RMS_Calculation(void);
 void PFC_Init(void);
-void DC_Voltage_Control(void);
+void PFC_DC_Voltage_Control(void);
 void PFC_Current_Control(void);
 
 
-#define Ts      0.00001538;           //sampling time = 1/65kHz
+
 
 //ADC measurement gains
 
 #define kVac    0.134310            //gain = 4095/3.3*(3V/500V)
-
 #define kVdc    0.134310            //gain = 4095/3.3*(3V/500V)
-
 #define kIac    0.0075428           //gain = 4095/3.3*(2.5V/23.4V)
 
-
 #define kV_Inv  0.134310            //gain = 4095/3.3*(3V/500V)
-
 #define kI_Inv  0.02442            //gain = 4095/3.3*(3.3V/100A)
 
 
+#define CLOSE_NTC_RELAY     GpioDataRegs.GPASET.bit.GPIO27 = 1
+#define OPEN_NTC_RELAY      GpioDataRegs.GPACLEAR.bit.GPIO27 = 1
+
+#define NTC_RELAY_STATUS    GpioDataRegs.GPBDAT.bit.GPIO61
+
+
+
+float Ts = 0.00001538;           //sampling time = 1/65kHz
 
 //PI controller gains for Vdc, Iac control
 
-float Vdc_ref = 0, IS_ref = 0, Iac_ref;
-
+float PFC_Vdc_ref = 0, IS_ref = 0, Iac_ref;
 float Vac_peak = 325;
-
-float KpVdc = 0.2, KiVdc = 50;           //PI VOLTAGE CONTROL LOOP
-
+float PFC_KpVdc = 0.2, PFC_KiVdc = 50;           //PI VOLTAGE CONTROL LOOP
 float KpIac = 40, KiIac = 10;          //PI CURRENT CONTROL LOOP
-
 float Err_Vdc, Err_Vdc1;
-
 float Err_Isa, Err_Isa1;
-
-float PFC_Pwm = 0, VloopCtr = 0;
-
+float PFC_Pwm = 0, PFC_VloopCtr = 0;
 Uint16 PFC_PWM_Period = 692;
-
-float Limit = 50;
+float PFC_Ctrl_Limit = 50;
 
 
 
 //PFC measurements
 
-Uint16 Vac_ADC, Iac_ADC, Vdc_ADC;
+float PFC_Vac_ADC, PFC_Iac_ADC, PFC_Vdc_ADC;
 
-float PFC_Vac_fb, PFC_Iac_fb, PFC_Vdc_fb;
+float PFC_Vac, PFC_Iac, PFC_Vdc;
 
-float Vac_offset, Iac_offset, Vdc_offset;
+float Vac_offset = 0, Iac_offset = 0, Vdc_offset = 0;
 
 
 //RMS value calculation
@@ -84,7 +74,7 @@ Uint16 RMS_Cnt_Max = 1300;
 
 float RMS_Cnt_Max_Invserve = 0.000769;
 
-float Pac_avg = 0;
+float Pin_avg = 0;
 
 
 
@@ -111,26 +101,26 @@ int16   start_flag, pfc_on_flag, Soft_Start_Phase, OV_flag, flag_NL_Vloop;//Set 
 
 
 
-void ADC_result(void)
+void PFC_ADC_result(void)
 {
 
         //Input AC voltage
 
-        Vac_ADC = AdcResult.ADCRESULT0;
+        PFC_Vac_ADC = AdcResult.ADCRESULT0;
 
-        PFC_Vac_fb = (Vac_ADC - Vac_offset)*kVac;          //Rectifier voltage
+        PFC_Vac = (PFC_Vac_ADC - Vac_offset)*kVac;          //Rectifier voltage
 
         //Input AC current
 
-        Iac_ADC = AdcResult.ADCRESULT1;
+        PFC_Iac_ADC = AdcResult.ADCRESULT1;
 
-        PFC_Iac_fb = (Iac_ADC - Iac_offset)*kIac;          //Rectifier current
+        PFC_Iac = (PFC_Iac_ADC - Iac_offset)*kIac;          //Rectifier current
 
         //Output DC voltage
 
-        Vdc_ADC = AdcResult.ADCRESULT2;
+        PFC_Vdc_ADC = AdcResult.ADCRESULT2;
 
-        PFC_Vdc_fb = (Vdc_ADC - Vdc_offset)*kVdc;          //Output DC voltage
+        PFC_Vdc = (PFC_Vdc_ADC - Vdc_offset)*kVdc;          //Output DC voltage
 
 
 
@@ -141,10 +131,10 @@ void ADC_result(void)
         //VDC_LPF = 0.99748988*VDC_LPF + 0.0012550599*(VDC + VDC1);     //30Hz at 50kHz
 
 
-        Vdc_LPF = 0.99731083*Vdc_LPF + 0.0013445865*(PFC_Vdc_fb + PFC_Vdc1);       //30Hz at 70kHz
+        Vdc_LPF = 0.99731083*Vdc_LPF + 0.0013445865*(PFC_Vdc + PFC_Vdc1);       //30Hz at 70kHz
 
 
-        PFC_Vdc1 = PFC_Vdc_fb;
+        PFC_Vdc1 = PFC_Vdc;
 
 
         RMS_Calculation();      //RMS value of AC voltage and current
@@ -157,9 +147,9 @@ void ADC_result(void)
 void RMS_Calculation(void)
 {
 
-        Sum_Vac = Sum_Vac + PFC_Vac_fb;
+        Sum_Vac = Sum_Vac + PFC_Vac*PFC_Vac;
 
-        Sum_Iac = Sum_Iac + PFC_Iac_fb;
+        Sum_Iac = Sum_Iac + PFC_Iac*PFC_Iac;
 
         RMS_Cnt++;
 
@@ -176,7 +166,7 @@ void RMS_Calculation(void)
 
             Sum_Iac = 0;
 
-            Pac_avg = Vac_RMS*Iac_RMS;
+            Pin_avg = Vac_RMS*Iac_RMS;
 
         }
 
@@ -210,17 +200,17 @@ void PFC_Init(void)
 
 
 
-void DC_Voltage_Control(void)
+void PFC_DC_Voltage_Control(void)
 {
 
 
             Err_Vdc1 = Err_Vdc;
 
 
-            Err_Vdc = Vdc_ref - Vdc_LPF;
+            Err_Vdc = PFC_Vdc_ref - Vdc_LPF;
 
 
-            IS_ref = IS_ref + KpVdc*(Err_Vdc - Err_Vdc1) + KiVdc*Err_Vdc*Ts;
+            IS_ref = IS_ref + PFC_KpVdc*(Err_Vdc - Err_Vdc1) + PFC_KiVdc*Err_Vdc*Ts;
 
 
             if(IS_ref > 22)     //22A peak ~ 15A rms
@@ -242,29 +232,29 @@ void PFC_Current_Control(void)
             //IS_ref = 25;
 
 
-            Iac_ref = IS_ref*PFC_Vac_fb/Vac_peak;      //input current reference
+            Iac_ref = IS_ref*PFC_Vac/Vac_peak;      //input current reference
 
 
             Err_Isa1 = Err_Isa;
 
-            Err_Isa = Iac_ref - PFC_Iac_fb;
+            Err_Isa = Iac_ref - PFC_Iac;
 
 
-            VloopCtr = VloopCtr + KpIac*(Err_Isa - Err_Isa1) + KiIac*Err_Isa*Ts;
+            PFC_VloopCtr = PFC_VloopCtr + KpIac*(Err_Isa - Err_Isa1) + KiIac*Err_Isa*Ts;
 
 
-            if(VloopCtr > Limit)
+            if(PFC_VloopCtr > PFC_Ctrl_Limit)
             {
-                VloopCtr = Limit;
+                PFC_VloopCtr = PFC_Ctrl_Limit;
             }
-            else if(VloopCtr < -Limit)
+            else if(PFC_VloopCtr < -PFC_Ctrl_Limit)
             {
-                VloopCtr = -Limit;
+                PFC_VloopCtr = -PFC_Ctrl_Limit;
             }
 
 
 
-            PFC_Pwm = VloopCtr + PFC_PWM_Period*(1 - PFC_Vac_fb/Vdc_ref);
+            PFC_Pwm = PFC_VloopCtr + PFC_PWM_Period*(1 - PFC_Vac/PFC_Vdc_ref);       //add supply voltage feed-forward term
 
 
             if(PFC_Pwm > PFC_PWM_Period)

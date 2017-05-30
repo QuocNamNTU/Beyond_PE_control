@@ -1,10 +1,9 @@
-//###########################################################################
-//
-// FILE:   IO_Setting.c
-//
-// TITLE:  F2806x GPIO and Function Initialization.
-//
-//###########################################################################
+/*
+ * IO_Setting.c
+ *
+ *  Created on: April 21, 2017
+ *      Author: tqnam
+ */
 
 
 #include "F2806x_Device.h"     // F2806x Headerfile Include File
@@ -25,20 +24,16 @@ void EPWM_init(void);
 void Interrupt_Setting(void);
 
 
-#define PFC_PD 692      //PFC PWM Period = 65 kHz = 692.3
-
-#define INV_PD 128         //INV PWM Period = 350 kHz = 128.6
-
-#define DC_PD 692         //DC-DC Converter PWM Period = 65 kHz = 692.3
-
-#define FAN_PD  9000        //FAN Control PWM Period = 5 kHz = 9000
-
+#define PFC_PWM_Period      692      //PFC PWM Period = 65 kHz = 692.3
+#define INV_PWM_Period      128         //INV PWM Period = 350 kHz = 128.6
+#define DCDC_PWM_Period     692         //DC-DC Converter PWM Period = 65 kHz = 692.3
+#define FAN_PWM_Period      9000        //FAN Control PWM Period = 5 kHz = 9000
 
 #define DB  15              //Deadband 15 ~ 200ns
 
 /*
 
-PD = 45MHz/PWM_PD
+PWM_Period = 45MHz/PWM_PWM_Period
 
  */
 
@@ -238,6 +233,29 @@ void ADC_init(void)
 
 
 
+        //##################  PFC ANA   ########################################
+
+        //ANA_PFC_I_SENSE_OUT   ADCINA6   23.4A:2.5V
+        //ANA_PFC_VAC_OUT       ADCINA7   500V:3V
+        //ANA_PFC_VDC_OUT       ADCINA5   500V:3V
+        //ANA_PFC_TEMP_OUT      ADCINB0   PULL UP TO 3.3V BY A 510OHM RESISTOR
+
+
+        //##################  DC-DC Converter ANA   ########################################
+
+        //ANA_DCDC_I_SENSE_OUT      ADCINA4   23.4A:2.5V
+        //ANA_DCDC_VDC_OUT          ADCINA3   500V:3V
+        //ANA_DCDC_VOUT             ADCINA1   500V:3V
+
+
+        //##################  Inverter ANA   ########################################
+
+        //ANA_INV_I_SENSE_OUT     ADCINA2   I*3.3/100+1.25
+        //ANA_INV_VDC_OUT         ADCINA0   500V:3V
+        //ANA_INV_TEMP_OUT        ADCINB1   PULL UP TO 3.3V BY A 510OHM RESISTOR
+
+
+
         AdcRegs.ADCSOC0CTL.bit.CHSEL    = 7;  // Vin -> A7
 
         AdcRegs.ADCSOC1CTL.bit.CHSEL    = 6;  // Iin -> A6
@@ -247,16 +265,16 @@ void ADC_init(void)
         AdcRegs.ADCSOC3CTL.bit.CHSEL    = 8;  // PFC Heatsink temp -> B0
 
 
-        AdcRegs.ADCSOC4CTL.bit.CHSEL    = 4;  // Idc -> A4
+        AdcRegs.ADCSOC4CTL.bit.CHSEL    = 3;  // Vdc -> A3
 
-        AdcRegs.ADCSOC5CTL.bit.CHSEL    = 3;  // Vdc -> A3
+        AdcRegs.ADCSOC5CTL.bit.CHSEL    = 1;  // Vinv -> A1
 
-        AdcRegs.ADCSOC6CTL.bit.CHSEL    = 1;  // Vout -> A1
+        AdcRegs.ADCSOC6CTL.bit.CHSEL    = 4;  // Idc -> A4
 
 
-        AdcRegs.ADCSOC7CTL.bit.CHSEL    = 2;  // Iout -> A2
+        AdcRegs.ADCSOC7CTL.bit.CHSEL    = 0;  // Vinv -> A0
 
-        AdcRegs.ADCSOC8CTL.bit.CHSEL    = 0;  // Vdc1 -> A0
+        AdcRegs.ADCSOC8CTL.bit.CHSEL    = 2;  // Iout -> A2
 
         AdcRegs.ADCSOC9CTL.bit.CHSEL    = 9;  // INV Heatsink temp -> B1
 
@@ -317,26 +335,6 @@ void ADC_init(void)
 
 
 
-        //##################  PFC ANA   ########################################
-
-        //ANA_PFC_I_SENSE_OUT   ADCINA6   23.4A:2.5V
-        //ANA_PFC_VAC_OUT       ADCINA7   500V:3V
-        //ANA_PFC_VDC_OUT       ADCINA5   500V:3V
-        //ANA_PFC_TEMP_OUT      ADCINB0   PULL UP TO 3.3V BY A 510OHM RESISTOR
-
-
-        //##################  DC-DC Converter ANA   ########################################
-
-        //ANA_DCDC_I_SENSE_OUT      ADCINA4   23.4A:2.5V
-        //ANA_DCDC_VDC_OUT          ADCINA3   500V:3V
-        //ANA_DCDC_VOUT             ADCINA1   500V:3V
-
-
-        //##################  Inverter ANA   ########################################
-
-        //ANA_INV_I_SENSE_OUT     ADCINA2   I*3.3/100+1.25
-        //ANA_INV_VDC_OUT         ADCINA0   500V:3V
-        //ANA_INV_TEMP_OUT        ADCINB1   PULL UP TO 3.3V BY A 510OHM RESISTOR
 
 
 }
@@ -353,9 +351,9 @@ void EPWM_init()
 
 	   	//##################  PWM7 for PFC PWM   ########################################
 
-	   	//PFC_PD = 65kHz
+	   	//PFC_PWM_Period = 65kHz
 
-		EPwm7Regs.TBPRD = PFC_PD; // Period = ??? TBCLK counts		//65kHz
+		EPwm7Regs.TBPRD = PFC_PWM_Period; // Period = ??? TBCLK counts		//65kHz
 
 		EPwm7Regs.TBPHS.half.TBPHS = 0; // Set Phase register to zero
 		EPwm7Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;// Symmetrical mode
@@ -384,10 +382,10 @@ void EPWM_init()
 
 		//##################  PWM1-2 for Inverter PWMs   ########################################
 
-		//INV_PD = 350kHz
+		//INV_PWM_Period = 350kHz
 
 
-		EPwm1Regs.TBPRD = INV_PD; // Period = ??? TBCLK counts		//350Khz
+		EPwm1Regs.TBPRD = INV_PWM_Period; // Period = ??? TBCLK counts		//350Khz
 
 		EPwm1Regs.TBPHS.half.TBPHS = 0; // Set Phase register to zero
 		EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;// Symmetrical mode
@@ -411,7 +409,7 @@ void EPWM_init()
 		EPwm1Regs.DBRED = DB; // RED = 50 TBCLKs
 
 
-		EPwm2Regs.TBPRD = INV_PD; // Period = ??? TBCLK counts      //350Khz
+		EPwm2Regs.TBPRD = INV_PWM_Period; // Period = ??? TBCLK counts      //350Khz
 
         EPwm2Regs.TBPHS.half.TBPHS = 0; // Set Phase register to zero
         EPwm2Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;// Symmetrical mode
@@ -424,10 +422,10 @@ void EPWM_init()
         EPwm2Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO_PRD; // load on CTR=Zero
 
 
-        EPwm2Regs.AQCTLA.bit.CAU = AQ_CLEAR;    // set actions active low for EPWM2A
-        EPwm2Regs.AQCTLA.bit.CAD = AQ_SET;
-        EPwm2Regs.AQCTLB.bit.CAU = AQ_SET;      // set actions active high for EPWM2B
-        EPwm2Regs.AQCTLB.bit.CAD = AQ_CLEAR;
+        EPwm2Regs.AQCTLA.bit.CAU = AQ_SET;    // set actions active low for EPWM2A
+        EPwm2Regs.AQCTLA.bit.CAD = AQ_CLEAR;
+        EPwm2Regs.AQCTLB.bit.CAU = AQ_CLEAR;      // set actions active high for EPWM2B
+        EPwm2Regs.AQCTLB.bit.CAD = AQ_SET;
 
 
         EPwm2Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE; // Enable Dead-band module
@@ -439,10 +437,10 @@ void EPWM_init()
 
         //##################  PWM4 for DC-DC Converter PWM   ########################################
 
-        //DC_PD = 65kHz
+        //DC_PWM_Period = 65kHz
 
 
-		EPwm4Regs.TBPRD = DC_PD; // Period = ??? TBCLK counts   65kHz
+		EPwm4Regs.TBPRD = DCDC_PWM_Period; // Period = ??? TBCLK counts   65kHz
 
 		EPwm4Regs.TBPHS.half.TBPHS = 0; // Set Phase register to zero
 		EPwm4Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;// Symmetrical mode
@@ -451,7 +449,7 @@ void EPWM_init()
 		EPwm4Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN; // sync flow-through
 		EPwm4Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;
 		EPwm4Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;
-		EPwm4Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO_PRD; // load on CTR=Zero and PD
+		EPwm4Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO_PRD; // load on CTR=Zero and PWM_Period
 		EPwm4Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO_PRD; // load on CTR=Zero
 
 
@@ -469,10 +467,10 @@ void EPWM_init()
 
 		//##################  PWM8 for FAN Control   ########################################
 
-		//FAN_PD = 5kHz
+		//FAN_PWM_Period = 5kHz
 
 
-		EPwm8Regs.TBPRD = FAN_PD; // Period = ??? TBCLK counts      5kHz
+		EPwm8Regs.TBPRD = FAN_PWM_Period; // Period = ??? TBCLK counts      5kHz
 
 		EPwm8Regs.TBPHS.half.TBPHS = 0; // Set Phase register to zero
 		EPwm8Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;// Symmetrical mode

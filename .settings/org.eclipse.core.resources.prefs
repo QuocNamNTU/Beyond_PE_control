@@ -1,6 +1,12 @@
 eclipse.preferences.version=1
+encoding//Debug/app/DC-DC_Control/subdir_rules.mk=UTF-8
+encoding//Debug/app/DC-DC_Control/subdir_vars.mk=UTF-8
+encoding//Debug/app/INV_Control/subdir_rules.mk=UTF-8
+encoding//Debug/app/INV_Control/subdir_vars.mk=UTF-8
 encoding//Debug/app/PFC_Control/subdir_rules.mk=UTF-8
 encoding//Debug/app/PFC_Control/subdir_vars.mk=UTF-8
+encoding//Debug/app/subdir_rules.mk=UTF-8
+encoding//Debug/app/subdir_vars.mk=UTF-8
 encoding//Debug/driverlib/inc/subdir_rules.mk=UTF-8
 encoding//Debug/driverlib/inc/subdir_vars.mk=UTF-8
 encoding//Debug/driverlib/source/subdir_rules.mk=UTF-8

@@ -23,8 +23,12 @@ ORDERED_OBJS += \
 "./F2806x_SysCtrl.obj" \
 "./F2806x_usDelay.obj" \
 "./Main.obj" \
+"./app/CoilCouplingEst.obj" \
+"./app/Fan_Control.obj" \
+"./app/DC-DC_Control/DC-DC_Control.obj" \
+"./app/INV_Control/Inverter_Control.obj" \
 "./app/PFC_Control/IO_Setting.obj" \
-"./app/PFC_Control/PFC_Control1.obj" \
+"./app/PFC_Control/PFC_Control.obj" \
 "./driverlib/inc/adc.obj" \
 "./driverlib/inc/asysctl.obj" \
 "./driverlib/inc/can.obj" \
@@ -64,9 +68,15 @@ RMDIR := RMDIR /S/Q
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
+-include app/subdir_vars.mk
+-include app/DC-DC_Control/subdir_vars.mk
+-include app/INV_Control/subdir_vars.mk
 -include app/PFC_Control/subdir_vars.mk
 -include driverlib/inc/subdir_vars.mk
 -include subdir_rules.mk
+-include app/subdir_rules.mk
+-include app/DC-DC_Control/subdir_rules.mk
+-include app/INV_Control/subdir_rules.mk
 -include app/PFC_Control/subdir_rules.mk
 -include driverlib/inc/subdir_rules.mk
 -include objects.mk
@@ -197,8 +207,9 @@ Wireless_System_Control.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "F2806x_Adc.obj" "F2806x_CodeStartBranch.obj" "F2806x_CpuTimers.obj" "F2806x_DefaultIsr.obj" "F2806x_EPwm.obj" "F2806x_GlobalVariableDefs.obj" "F2806x_PieCtrl.obj" "F2806x_PieVect.obj" "F2806x_SysCtrl.obj" "F2806x_usDelay.obj" "Main.obj" "app\PFC_Control\IO_Setting.obj" "app\PFC_Control\PFC_Control1.obj" "driverlib\inc\adc.obj" "driverlib\inc\asysctl.obj" "driverlib\inc\can.obj" "driverlib\inc\cla.obj" "driverlib\inc\cmpss.obj" "driverlib\inc\cputimer.obj" "driverlib\inc\dac.obj" "driverlib\inc\dcsm.obj" "driverlib\inc\dma.obj" "driverlib\inc\ecap.obj" "driverlib\inc\emif.obj" "driverlib\inc\epwm.obj" "driverlib\inc\eqep.obj" "driverlib\inc\flash.obj" "driverlib\inc\gpio.obj" "driverlib\inc\hrpwm.obj" "driverlib\inc\i2c.obj" "driverlib\inc\interrupt.obj" "driverlib\inc\mcbsp.obj" "driverlib\inc\memcfg.obj" "driverlib\inc\sci.obj" "driverlib\inc\sdfm.obj" "driverlib\inc\spi.obj" "driverlib\inc\sysctl.obj" "driverlib\inc\version.obj" "driverlib\inc\xbar.obj" 
-	-$(RM) "F2806x_Adc.d" "F2806x_CpuTimers.d" "F2806x_DefaultIsr.d" "F2806x_EPwm.d" "F2806x_GlobalVariableDefs.d" "F2806x_PieCtrl.d" "F2806x_PieVect.d" "F2806x_SysCtrl.d" "Main.d" "app\PFC_Control\IO_Setting.d" "app\PFC_Control\PFC_Control1.d" "driverlib\inc\adc.d" "driverlib\inc\asysctl.d" "driverlib\inc\can.d" "driverlib\inc\cla.d" "driverlib\inc\cmpss.d" "driverlib\inc\cputimer.d" "driverlib\inc\dac.d" "driverlib\inc\dcsm.d" "driverlib\inc\dma.d" "driverlib\inc\ecap.d" "driverlib\inc\emif.d" "driverlib\inc\epwm.d" "driverlib\inc\eqep.d" "driverlib\inc\flash.d" "driverlib\inc\gpio.d" "driverlib\inc\hrpwm.d" "driverlib\inc\i2c.d" "driverlib\inc\interrupt.d" "driverlib\inc\mcbsp.d" "driverlib\inc\memcfg.d" "driverlib\inc\sci.d" "driverlib\inc\sdfm.d" "driverlib\inc\spi.d" "driverlib\inc\sysctl.d" "driverlib\inc\version.d" "driverlib\inc\xbar.d" 
+	-$(RM) "F2806x_Adc.obj" "F2806x_CodeStartBranch.obj" "F2806x_CpuTimers.obj" "F2806x_DefaultIsr.obj" "F2806x_EPwm.obj" "F2806x_GlobalVariableDefs.obj" "F2806x_PieCtrl.obj" "F2806x_PieVect.obj" "F2806x_SysCtrl.obj" "F2806x_usDelay.obj" "Main.obj" "app\CoilCouplingEst.obj" "app\Fan_Control.obj" "app\DC-DC_Control\DC-DC_Control.obj" "app\INV_Control\Inverter_Control.obj" "app\PFC_Control\IO_Setting.obj" "app\PFC_Control\PFC_Control.obj" "driverlib\inc\adc.obj" "driverlib\inc\asysctl.obj" "driverlib\inc\can.obj" "driverlib\inc\cla.obj" "driverlib\inc\cmpss.obj" "driverlib\inc\cputimer.obj" "driverlib\inc\dac.obj" "driverlib\inc\dcsm.obj" "driverlib\inc\dma.obj" "driverlib\inc\ecap.obj" "driverlib\inc\emif.obj" "driverlib\inc\epwm.obj" "driverlib\inc\eqep.obj" "driverlib\inc\flash.obj" "driverlib\inc\gpio.obj" "driverlib\inc\hrpwm.obj" "driverlib\inc\i2c.obj" "driverlib\inc\interrupt.obj" "driverlib\inc\mcbsp.obj" "driverlib\inc\memcfg.obj" "driverlib\inc\sci.obj" "driverlib\inc\sdfm.obj" "driverlib\inc\spi.obj" 
+	-$(RM) "driverlib\inc\sysctl.obj" "driverlib\inc\version.obj" "driverlib\inc\xbar.obj" 
+	-$(RM) "F2806x_Adc.d" "F2806x_CpuTimers.d" "F2806x_DefaultIsr.d" "F2806x_EPwm.d" "F2806x_GlobalVariableDefs.d" "F2806x_PieCtrl.d" "F2806x_PieVect.d" "F2806x_SysCtrl.d" "Main.d" "app\CoilCouplingEst.d" "app\Fan_Control.d" "app\DC-DC_Control\DC-DC_Control.d" "app\INV_Control\Inverter_Control.d" "app\PFC_Control\IO_Setting.d" "app\PFC_Control\PFC_Control.d" "driverlib\inc\adc.d" "driverlib\inc\asysctl.d" "driverlib\inc\can.d" "driverlib\inc\cla.d" "driverlib\inc\cmpss.d" "driverlib\inc\cputimer.d" "driverlib\inc\dac.d" "driverlib\inc\dcsm.d" "driverlib\inc\dma.d" "driverlib\inc\ecap.d" "driverlib\inc\emif.d" "driverlib\inc\epwm.d" "driverlib\inc\eqep.d" "driverlib\inc\flash.d" "driverlib\inc\gpio.d" "driverlib\inc\hrpwm.d" "driverlib\inc\i2c.d" "driverlib\inc\interrupt.d" "driverlib\inc\mcbsp.d" "driverlib\inc\memcfg.d" "driverlib\inc\sci.d" "driverlib\inc\sdfm.d" "driverlib\inc\spi.d" "driverlib\inc\sysctl.d" "driverlib\inc\version.d" "driverlib\inc\xbar.d" 
 	-$(RM) "F2806x_CodeStartBranch.d" "F2806x_usDelay.d" 
 	-@echo 'Finished clean'
 	-@echo ' '

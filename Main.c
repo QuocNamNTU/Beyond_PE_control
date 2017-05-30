@@ -1,15 +1,9 @@
-//###########################################################################
-//
-//DSP 28069 firmware for Wireless charger system
-
-//
-// FILE:   Main.c
-//
-// TITLE:  F2806x PFC Control Functions.
-//
-//###########################################################################
-
-//###########################################################################
+/*
+ * Main.c
+ *
+ *  Created on: April 21, 2017
+ *      Author: tqnam
+ */
 
 //
 // Included Files
@@ -30,11 +24,24 @@ extern void ADC_init(void);
 extern void EPWM_init(void);
 extern void Interrupt_Setting(void);
 
-extern void ADC_result(void);
+extern void PFC_ADC_result(void);
 extern void RMS_Calculation(void);
 extern void PFC_Init(void);
-extern void DC_Voltage_Control(void);
-extern void PFC_Current_Control(void);
+
+extern float PFC_DC_Voltage_Control(float voltage_ref, float voltage_fb);
+
+extern Uint16 PFC_Current_Control(float current_ref, float current_fb);
+
+extern void DCDC_ADC_result(void);
+extern void DCDC_Init(void);
+extern Uint16 DCDC_Voltage_Control(float voltage_ref,float voltage_fb);
+
+extern void INV_Init(void);
+extern void INV_PWM_Setting(Uint16 System_CLk, Uint16 fsw_INV);
+extern void INV_Init(void);
+extern float k_estimate(float voltage_in, float current_in, float resistor);
+extern float Vinv_ref(float current, float coupling_factor);
+
 
 //
 // Functions that will be run from RAM need to be assigned to
@@ -46,33 +53,23 @@ extern void PFC_Current_Control(void);
 
 
 
-
-//
-// Globals variables for ADC example test
-//
-Uint16 LoopCount;
-Uint16 ConversionCount;
-Uint16 Voltage1[10];
-Uint16 Voltage2[10];
-Uint16 Voltage3[10];
-Uint16 Voltage4[10];
-Uint16 Voltage5[10];
-Uint16 Voltage6[10];
-Uint16 Voltage7[10];
-Uint16 Voltage8[10];
-Uint16 Voltage9[10];
-Uint16 Voltage10[10];
-
-
 //Blinking LED on DSP CARD
 
-#define BLINK_LED() GpioDataRegs.GPATOGGLE.bit.GPIO31 = 1
+#define BLINK_LED()     GpioDataRegs.GPATOGGLE.bit.GPIO31 = 1
 
 
-//Test PWM duty
-Uint16 pwm_cnt = 0;
+
+int Test_mode;
+
+int Operation_stage;
 
 
+extern float PFC_Vac, PFC_Iac, PFC_Vdc;
+extern float PFC_Vdc_ref, Is_ref, Iac_ref;
+extern float DCDC_Vin, DCDC_Iout, DCDC_Vout;
+float DCDC_Vout_ref = 0;
+
+extern float Vdc_LPF;      //Low pass filter of DC bus voltage Vdc
 
 // These are defined by the linker (see F2808.cmd)
 //
@@ -89,68 +86,76 @@ extern Uint16 RamfuncsLoadSize;
 void main(void)
 {
 
-
     GPIO_init();       //Initialize GPIO
-
 
     InitSysCtrl();              //Initialize System Control
 
-
     EPWM_init();       //Initialize EPWM
-
 
     Interrupt_Setting();        // Initialize interrupt and enable interrupt
 
-
-    // Copy time critical code and Flash setup code to RAM
-    // This includes the following ISR functions: epwm1_timer_isr(),
-    // epwm2_timer_isr(), epwm3_timer_isr and and InitFlash();
-    // The  RamfuncsLoadStart, RamfuncsLoadSize, and RamfuncsRunStart
-    // symbols are created by the linker. Refer to the F2808.cmd file.
-    //
-
     //memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (Uint32)&RamfuncsLoadSize);
 
-    //
-    // Call Flash Initialization to setup flash waitstates
-    // This function must reside in RAM
-    //
     InitFlash();
-
 
     InitCpuTimers();            //Initialize Timer0
 
-
     ConfigCpuTimer(&CpuTimer0, 90, 500000);       //Timer0 500ms
-
-    //ConfigCpuTimer(&CpuTimer1, 150, 100000);      //Timer1 100ms
-
-    //ConfigCpuTimer(&CpuTimer2, 150, 1000000);     //Timer2 1s
-
 
     StartCpuTimer0();           //Start Timer0
 
-
     ADC_init();
-
 
     //AdcOffsetSelfCal();
 
     PFC_Init();     //Initial status of PFC
 
+    DCDC_Init();     //Initial status of DCDC
+
+    INV_Init();     //Initial status of inverter
+
+    INV_PWM_Setting(90, 350);       //(system clock, pwm frequency)
 
 
     while(1)
         {
-            ;
+            //switch(Test_mode)
+
+
         }
-
-
-
 
 
 }
 
+
+
+
+//
+// adc_isr -
+//
+__interrupt void adc_isr(void)
+{
+
+
+           PFC_ADC_result();        //Get ADC measurement of PFC
+
+           Is_ref = PFC_DC_Voltage_Control(PFC_Vdc_ref, Vdc_LPF);
+
+           EPwm7Regs.CMPA.half.CMPA = PFC_Current_Control(Is_ref, PFC_Iac);     //PFC current control
+
+           EPwm4Regs.CMPA.half.CMPA = DCDC_Voltage_Control(DCDC_Vout_ref, DCDC_Vout);      //DC-DC converter control
+
+
+
+    //
+    // Clear ADCINT1 flag reinitialize for next SOC
+    //
+    AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
+
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;   // Acknowledge interrupt to PIE
+
+    return;
+}
 
 
 
@@ -180,54 +185,11 @@ __interrupt void cpu_timer0_isr(void)
     BLINK_LED();      //Blinking LED every 0.5s
 
 
-    EPwm1Regs.CMPA.half.CMPA = pwm_cnt;
-
-    EPwm2Regs.CMPA.half.CMPA = pwm_cnt;
-
-    EPwm4Regs.CMPA.half.CMPA = pwm_cnt*5;
-
-    EPwm7Regs.CMPA.half.CMPA = pwm_cnt*5;
-
-    EPwm8Regs.CMPA.half.CMPA = pwm_cnt*50;
-
-    pwm_cnt++;
-
-    if(pwm_cnt > 128)
-    {
-        pwm_cnt = 0;
-    }
-
-
     // Acknowledge this interrupt to receive more interrupts from group 1
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 
 }
 
-
-//
-// adc_isr -
-//
-__interrupt void adc_isr(void)
-{
-
-
-       ADC_result();        //Get ADC measurement of PFC
-
-       DC_Voltage_Control();        //DC link voltage control
-
-       PFC_Current_Control();       //Current control
-
-
-
-    //
-    // Clear ADCINT1 flag reinitialize for next SOC
-    //
-    AdcRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;
-
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;   // Acknowledge interrupt to PIE
-
-    return;
-}
 
 
 //

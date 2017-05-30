@@ -112,6 +112,9 @@ PDE_DEPS__QUOTED :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 . \
+app \
+app/DC-DC_Control \
+app/INV_Control \
 app/PFC_Control \
 driverlib/inc \
 
