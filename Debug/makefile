@@ -27,7 +27,7 @@ ORDERED_OBJS += \
 "./app/Fan_Control.obj" \
 "./app/DC-DC_Control/DC-DC_Control.obj" \
 "./app/INV_Control/Inverter_Control.obj" \
-"./app/PFC_Control/IO_Setting.obj" \
+"./app/PFC_Control/IO_Config.obj" \
 "./app/PFC_Control/PFC_Control.obj" \
 "../F28069.cmd" \
 "C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/headers/cmd/F2806x_Headers_nonBIOS.cmd" \
@@ -179,8 +179,8 @@ Wireless_System_Control.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "F2806x_Adc.obj" "F2806x_CodeStartBranch.obj" "F2806x_CpuTimers.obj" "F2806x_DefaultIsr.obj" "F2806x_EPwm.obj" "F2806x_GlobalVariableDefs.obj" "F2806x_PieCtrl.obj" "F2806x_PieVect.obj" "F2806x_SysCtrl.obj" "F2806x_usDelay.obj" "Main.obj" "app\CoilCouplingEst.obj" "app\Fan_Control.obj" "app\DC-DC_Control\DC-DC_Control.obj" "app\INV_Control\Inverter_Control.obj" "app\PFC_Control\IO_Setting.obj" "app\PFC_Control\PFC_Control.obj" 
-	-$(RM) "F2806x_Adc.d" "F2806x_CpuTimers.d" "F2806x_DefaultIsr.d" "F2806x_EPwm.d" "F2806x_GlobalVariableDefs.d" "F2806x_PieCtrl.d" "F2806x_PieVect.d" "F2806x_SysCtrl.d" "Main.d" "app\CoilCouplingEst.d" "app\Fan_Control.d" "app\DC-DC_Control\DC-DC_Control.d" "app\INV_Control\Inverter_Control.d" "app\PFC_Control\IO_Setting.d" "app\PFC_Control\PFC_Control.d" 
+	-$(RM) "F2806x_Adc.obj" "F2806x_CodeStartBranch.obj" "F2806x_CpuTimers.obj" "F2806x_DefaultIsr.obj" "F2806x_EPwm.obj" "F2806x_GlobalVariableDefs.obj" "F2806x_PieCtrl.obj" "F2806x_PieVect.obj" "F2806x_SysCtrl.obj" "F2806x_usDelay.obj" "Main.obj" "app\CoilCouplingEst.obj" "app\Fan_Control.obj" "app\DC-DC_Control\DC-DC_Control.obj" "app\INV_Control\Inverter_Control.obj" "app\PFC_Control\IO_Config.obj" "app\PFC_Control\PFC_Control.obj" 
+	-$(RM) "F2806x_Adc.d" "F2806x_CpuTimers.d" "F2806x_DefaultIsr.d" "F2806x_EPwm.d" "F2806x_GlobalVariableDefs.d" "F2806x_PieCtrl.d" "F2806x_PieVect.d" "F2806x_SysCtrl.d" "Main.d" "app\CoilCouplingEst.d" "app\Fan_Control.d" "app\DC-DC_Control\DC-DC_Control.d" "app\INV_Control\Inverter_Control.d" "app\PFC_Control\IO_Config.d" "app\PFC_Control\PFC_Control.d" 
 	-$(RM) "F2806x_CodeStartBranch.d" "F2806x_usDelay.d" 
 	-@echo 'Finished clean'
 	-@echo ' '

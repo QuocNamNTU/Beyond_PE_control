@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v16.9.1                     
 ******************************************************************************
->> Linked Wed May 31 14:20:36 2017
+>> Linked Wed May 31 14:53:26 2017
 
 OUTPUT FILE NAME:   <Wireless_System_Control.out>
 ENTRY POINT SYMBOL: "code_start"  address: 003f7ff6
@@ -116,7 +116,7 @@ ramfuncs   0    00008000    000000bd
 
 .text      0    003f4000    00000eca     
                   003f4000    0000039b     F2806x_DefaultIsr.obj (.text:retain)
-                  003f439b    0000028d     IO_Setting.obj (.text)
+                  003f439b    0000028d     IO_Config.obj (.text)
                   003f4628    000001d6     PFC_Control.obj (.text)
                   003f47fe    0000018c     F2806x_SysCtrl.obj (.text)
                   003f498a    000000cf     Main.obj (.text)
@@ -437,7 +437,7 @@ MODULE SUMMARY
        Total:                          178    0                  0                 
                                                                                    
     .\app\PFC_Control\
-       IO_Setting.obj                  653    0                  0                 
+       IO_Config.obj                   653    0                  0                 
        PFC_Control.obj                 470    91                 66                
     +--+-------------------------------+------+------------------+--------------------+
        Total:                          1123   91                 66                
