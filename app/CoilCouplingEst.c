@@ -21,8 +21,6 @@ float Vinv_ref(float current, float coupling_factor);
 
 
 
-
-
 float k_estimate(float voltage_in, float current_in, float resistor)
 {
 

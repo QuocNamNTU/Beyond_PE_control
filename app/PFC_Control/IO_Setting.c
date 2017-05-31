@@ -8,34 +8,9 @@
 
 #include "F2806x_Device.h"     // F2806x Headerfile Include File
 #include "F2806x_Examples.h"   // F2806x Examples Include File
-
+#include "Main.h"
 
 #define ADC_usDELAY  1000L
-
-
-extern __interrupt void  epwm7_isr(void);
-extern __interrupt void  cpu_timer0_isr(void);
-extern __interrupt void  adc_isr(void);
-
-
-void GPIO_init(void);
-void ADC_init(void);
-void EPWM_init(void);
-void Interrupt_Setting(void);
-
-
-#define PFC_PWM_Period      692      //PFC PWM Period = 65 kHz = 692.3
-#define INV_PWM_Period      128         //INV PWM Period = 350 kHz = 128.6
-#define DCDC_PWM_Period     692         //DC-DC Converter PWM Period = 65 kHz = 692.3
-#define FAN_PWM_Period      9000        //FAN Control PWM Period = 5 kHz = 9000
-
-#define DB  15              //Deadband 15 ~ 200ns
-
-/*
-
-PWM_Period = 45MHz/PWM_PWM_Period
-
- */
 
 
 void GPIO_init()
@@ -405,8 +380,8 @@ void EPWM_init()
 
 		EPwm1Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE; // Enable Dead-band module
 		EPwm1Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC; // Active Hi complementary
-		EPwm1Regs.DBFED = DB; // FED = 50 TBCLKs
-		EPwm1Regs.DBRED = DB; // RED = 50 TBCLKs
+		EPwm1Regs.DBFED = Deadtime; // FED = 50 TBCLKs
+		EPwm1Regs.DBRED = Deadtime; // RED = 50 TBCLKs
 
 
 		EPwm2Regs.TBPRD = INV_PWM_Period; // Period = ??? TBCLK counts      //350Khz
@@ -430,8 +405,8 @@ void EPWM_init()
 
         EPwm2Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE; // Enable Dead-band module
         EPwm2Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC; // Active Hi complementary
-        EPwm2Regs.DBFED = DB; // FED = 50 TBCLKs
-        EPwm2Regs.DBRED = DB; // RED = 50 TBCLKs
+        EPwm2Regs.DBFED = Deadtime; // FED = 50 TBCLKs
+        EPwm2Regs.DBRED = Deadtime; // RED = 50 TBCLKs
 
 
 
@@ -461,8 +436,8 @@ void EPWM_init()
 
 		EPwm4Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE; // Enable Dead-band module
 		EPwm4Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC; // Active Hi complementary
-		EPwm4Regs.DBFED = DB; // FED = 50 TBCLKs
-		EPwm4Regs.DBRED = DB; // RED = 50 TBCLKs
+		EPwm4Regs.DBFED = Deadtime; // FED = 50 TBCLKs
+		EPwm4Regs.DBRED = Deadtime; // RED = 50 TBCLKs
 
 
 		//##################  PWM8 for FAN Control   ########################################
@@ -555,7 +530,7 @@ void Interrupt_Setting()
    PieVectTable.EPWM7_INT = &epwm7_isr;    //PWM
    PieVectTable.TINT0 = &cpu_timer0_isr;        //Timer 0
    //PieVectTable.SCIRXINTC = &scic_rx_isr;       //SCI-C
-   //PieVectTable.XINT13 = &cpu_timer1_isr;
+   PieVectTable.TINT1 = &cpu_timer1_isr;
    //PieVectTable.TINT2 = &cpu_timer2_isr;
    //PieVectTable.ECAN1INTB = &ecan1_intb_isr;        //ECAN interrupt
    PieVectTable.ADCINT1 = &adc_isr;                  //ADC interrupt
@@ -565,7 +540,7 @@ void Interrupt_Setting()
     IER |= M_INT1;  //ADC and Timer0
     IER |= M_INT3;  //PWM
     //IER |= M_INT8;  //RXD-C
-    //IER |= M_INT13; //Timer1
+    IER |= M_INT13; //Timer1
     //IER |= M_INT14; //Timer2
     //IER |= M_INT9;  //ECAN-B
 

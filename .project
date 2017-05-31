@@ -33,52 +33,52 @@
 		<link>
 			<name>F2806x_CodeStartBranch.asm</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/common/source/F2806x_CodeStartBranch.asm</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/common/source/F2806x_CodeStartBranch.asm</location>
 		</link>
 		<link>
 			<name>F2806x_CpuTimers.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/common/source/F2806x_CpuTimers.c</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/common/source/F2806x_CpuTimers.c</location>
 		</link>
 		<link>
 			<name>F2806x_DefaultIsr.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/common/source/F2806x_DefaultIsr.c</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/common/source/F2806x_DefaultIsr.c</location>
 		</link>
 		<link>
 			<name>F2806x_EPwm.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/common/source/F2806x_EPwm.c</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/common/source/F2806x_EPwm.c</location>
 		</link>
 		<link>
 			<name>F2806x_GlobalVariableDefs.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/headers/source/F2806x_GlobalVariableDefs.c</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/headers/source/F2806x_GlobalVariableDefs.c</location>
 		</link>
 		<link>
 			<name>F2806x_Headers_nonBIOS.cmd</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/headers/cmd/F2806x_Headers_nonBIOS.cmd</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/headers/cmd/F2806x_Headers_nonBIOS.cmd</location>
 		</link>
 		<link>
 			<name>F2806x_PieCtrl.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/common/source/F2806x_PieCtrl.c</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/common/source/F2806x_PieCtrl.c</location>
 		</link>
 		<link>
 			<name>F2806x_PieVect.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/common/source/F2806x_PieVect.c</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/common/source/F2806x_PieVect.c</location>
 		</link>
 		<link>
 			<name>F2806x_SysCtrl.c</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/common/source/F2806x_SysCtrl.c</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/common/source/F2806x_SysCtrl.c</location>
 		</link>
 		<link>
 			<name>F2806x_usDelay.asm</name>
 			<type>1</type>
-			<locationURI>INSTALLROOT_F2806x1/common/source/F2806x_usDelay.asm</locationURI>
+			<location>C:/ti/c2000/C2000Ware_1_00_00_00/device_support/f2806x/common/source/F2806x_usDelay.asm</location>
 		</link>
 	</linkedResources>
 	<variableList>

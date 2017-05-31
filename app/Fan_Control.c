@@ -1,24 +1,15 @@
 /*
  * Fan_Control.c
  *
- *  Created on: May 30, 2017
+ *  Created on: May 14, 2017
  *      Author: tqnam
  */
 
 
 #include "F2806x_Device.h"     // F2806x Headerfile Include File
 #include "F2806x_Examples.h"   // F2806x Examples Include File
+#include "Main.h"
 
-
-Uint16 Fan_PWM(float power, float power_max);
-
-
-extern float Pin_avg;
-
-//#define POWER_IN_MAX        2800            //Pin_max
-//#define POWER_IN_MAX_1      0.0000357       //  1/Pin_max
-
-#define FAN_PWM_Period      9000        //FAN Control PWM Period = 5 kHz = 9000
 
 
 

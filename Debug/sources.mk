@@ -116,5 +116,4 @@ app \
 app/DC-DC_Control \
 app/INV_Control \
 app/PFC_Control \
-driverlib/inc \
 
