@@ -189,6 +189,7 @@ Uint16 PFC_Current_Control(float current_ref, float current_fb)
 
 
     Iac_ref = current_ref*PFC_Vac/Vac_peak;      //input current reference
+                                                 //Reference current is generated according to shape of input voltage
 
 
     Err_Isa1 = Err_Isa;
