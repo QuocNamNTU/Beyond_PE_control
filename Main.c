@@ -234,6 +234,8 @@ __interrupt void adc_isr(void)
 
         GREEN_LED_ON();             //On Green LED
 
+        PFC_Vdc_ref_target = Vac_RMS*1.6522;        //Max = 380Vdc @ 230Vac
+
         PFC_Vdc_ref = Votage_Ramp(PFC_Vdc_ref, PFC_Vdc_ref_target);         //Ramp up PFC ref voltage
 
         Is_ref = PFC_DC_Voltage_Control(PFC_Vdc_ref, Vdc_LPF);

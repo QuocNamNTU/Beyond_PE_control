@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v16.9.1                     
 ******************************************************************************
->> Linked Wed May 31 14:53:26 2017
+>> Linked Wed May 31 23:37:56 2017
 
 OUTPUT FILE NAME:   <Wireless_System_Control.out>
 ENTRY POINT SYMBOL: "code_start"  address: 003f7ff6
@@ -12,7 +12,7 @@ MEMORY CONFIGURATION
          name            origin    length      used     unused   attr    fill
 ----------------------  --------  ---------  --------  --------  ----  --------
 PAGE 0:
-  RAML0                 00008000   00000800  000000bd  00000743  RWIX
+  RAML0                 00008000   00000800  000000c9  00000737  RWIX
   RAML1                 00008800   00000400  00000000  00000400  RWIX
   OTP                   003d7800   00000400  00000000  00000400  RWIX
   FLASHH                003d8000   00004000  00000000  00004000  RWIX
@@ -109,10 +109,10 @@ section   page    origin      length       input sections
 .TI.ramfunc 
 *          0    00008000    00000000     UNINITIALIZED
 
-ramfuncs   0    00008000    000000bd     
-                  00008000    0000009e     Main.obj (ramfuncs:retain)
-                  0000809e    0000001b     F2806x_SysCtrl.obj (ramfuncs)
-                  000080b9    00000004     F2806x_usDelay.obj (ramfuncs)
+ramfuncs   0    00008000    000000c9     
+                  00008000    000000aa     Main.obj (ramfuncs:retain)
+                  000080aa    0000001b     F2806x_SysCtrl.obj (ramfuncs)
+                  000080c5    00000004     F2806x_usDelay.obj (ramfuncs)
 
 .text      0    003f4000    00000eca     
                   003f4000    0000039b     F2806x_DefaultIsr.obj (.text:retain)
@@ -410,7 +410,7 @@ MODULE SUMMARY
     .\
        F2806x_GlobalVariableDefs.obj   0      0                  3550              
        F2806x_DefaultIsr.obj           923    0                  0                 
-       Main.obj                        530    32                 22                
+       Main.obj                        542    32                 22                
        F2806x_SysCtrl.obj              423    0                  0                 
        F2806x_PieVect.obj              38     256                0                 
        F2806x_CpuTimers.obj            118    0                  24                
@@ -418,7 +418,7 @@ MODULE SUMMARY
        F2806x_CodeStartBranch.obj      10     0                  0                 
        F2806x_usDelay.obj              4      0                  0                 
     +--+-------------------------------+------+------------------+--------------------+
-       Total:                          2086   288                3596              
+       Total:                          2098   288                3596              
                                                                                    
     .\app\
        CoilCouplingEst.obj             64     0                  0                 
@@ -462,7 +462,7 @@ MODULE SUMMARY
                                                                                    
        Stack:                          0      0                  512               
     +--+-------------------------------+------+------------------+--------------------+
-       Grand Total:                    3977   443                4218              
+       Grand Total:                    3989   443                4218              
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -719,7 +719,7 @@ page  address   name
 0     003f4262  _DINTCH4_ISR                    
 0     003f426c  _DINTCH5_ISR                    
 0     003f4276  _DINTCH6_ISR                    
-0     000080b9  _DSP28x_usDelay                 
+0     000080c5  _DSP28x_usDelay                 
 1     00000880  _DevEmuRegs                     
 0     003f4822  _DisableDog                     
 1     00001000  _DmaRegs                        
@@ -804,7 +804,7 @@ page  address   name
 1     0000a028  _Iac_offset                     
 1     0000a036  _Iac_ref                        
 0     003f4c73  _InitCpuTimers                  
-0     0000809e  _InitFlash                      
+0     000080aa  _InitFlash                      
 0     003f48ad  _InitPeripheralClocks           
 0     003f4dd3  _InitPieCtrl                    
 0     003f4dfb  _InitPieVectTable               
@@ -940,7 +940,7 @@ abs   ffffffff  ___pinit__
 0     003f4e21  _copy_in                        
 0     003f4c33  _cpu_timer0_isr                 
 0     003f4bce  _cpu_timer1_isr                 
-0     00008089  _epwm7_isr                      
+0     00008095  _epwm7_isr                      
 1     0000a083  _est_k_cnt                      
 1     0000a080  _est_k_flag                     
 0     003f4dac  _exit                           
@@ -966,9 +966,9 @@ page  address   name
 0     00008000  _RamfuncsLoadStart              
 0     00008000  _RamfuncsRunStart               
 0     00008000  _adc_isr                        
-0     00008089  _epwm7_isr                      
-0     0000809e  _InitFlash                      
-0     000080b9  _DSP28x_usDelay                 
+0     00008095  _epwm7_isr                      
+0     000080aa  _InitFlash                      
+0     000080c5  _DSP28x_usDelay                 
 0     003f4000  .text                           
 0     003f4000  _INT13_ISR                      
 0     003f4000  ___text__                       
