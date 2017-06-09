@@ -228,7 +228,7 @@ __interrupt void adc_isr(void)
 
         Vinv_equi_ref = Vinv_ref(Irec, k_est);
 
-        Reference_Gen();
+        Reference_Gen();            //Estimate reference DC votlage for Inverter
 
         CLOSE_NTC_RELAY();          //close NTC relay
 
